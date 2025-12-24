@@ -27,25 +27,64 @@ body{
   opacity:.8;
 }
 @keyframes snow{from{transform:translateY(-10%)}to{transform:translateY(110%)}}
-.stage{width:min(820px,94vw);height:min(480px,70vh);perspective:1400px;position:relative}
-.card{width:100%;height:100%;transform-style:preserve-3d;transition:.9s}
+
+.stage{
+  width:min(820px,94vw);
+  height:min(480px,70vh);
+  perspective:1400px;
+}
+.card{
+  width:100%;height:100%;
+  transform-style:preserve-3d;
+  transition:.9s;
+}
 .open .card{transform:rotateY(180deg)}
+
 .front,.inside{
-  position:absolute; inset:0; border-radius:24px;
+  position:absolute; inset:0;
+  border-radius:24px;
   background:rgba(255,255,255,.08);
   border:1px solid rgba(255,255,255,.2);
   backdrop-filter:blur(10px);
 }
-.front{display:grid;place-items:center;backface-visibility:hidden;text-align:center}
-.inside{transform:rotateY(180deg);display:grid;grid-template-columns:1.1fr .9fr;gap:18px;padding:22px}
-.left{background:rgba(0,0,0,.25);border-radius:18px;padding:18px}
-.santa{width:220px;opacity:0;transform:translateY(40px);transition:.8s}
+.front{
+  display:grid;
+  place-items:center;
+  backface-visibility:hidden;
+  text-align:center;
+}
+.inside{
+  transform:rotateY(180deg);
+  display:grid;
+  grid-template-columns:1.1fr .9fr;
+  gap:18px;
+  padding:22px;
+}
+.left{
+  background:rgba(0,0,0,.25);
+  border-radius:18px;
+  padding:18px;
+}
+.santa{
+  width:220px;
+  opacity:0;
+  transform:translateY(40px);
+  transition:.8s;
+}
 .open .santa{opacity:1;transform:none}
-#musicBtn{
-  position:fixed;bottom:18px;left:50%;transform:translateX(-50%);
-  padding:12px 20px;border-radius:999px;border:none;
-  background:#fff;color:#000;font-size:15px;font-weight:600;
-  z-index:9999;cursor:pointer
+
+/* 오디오 바 예쁘게 중앙 고정 */
+.audio-wrap{
+  position:fixed;
+  bottom:16px;
+  left:50%;
+  transform:translateX(-50%);
+  background:rgba(0,0,0,.35);
+  padding:8px 12px;
+  border-radius:14px;
+}
+audio{
+  width:280px;
 }
 </style>
 </head>
@@ -53,21 +92,16 @@ body{
 <body>
 <div class="snow"></div>
 
-<audio id="bgm" preload="auto" loop>
-  <source src="under-the-same-old-star.mp3" type="audio/mpeg">
-</audio>
-
-<button id="musicBtn">🔊 음악 켜기</button>
-
 <div class="stage" id="stage">
   <div class="card">
     <section class="front">
       <div>
         <h1>🎄 엄마에게</h1>
-        <p>클릭하면 카드가 열려요</p>
+        <p>카드를 클릭하면 열려요</p>
         <strong>From. 정훈</strong>
       </div>
     </section>
+
     <section class="inside">
       <div class="left">
         <h2>메리 크리스마스 🎁</h2>
@@ -93,29 +127,19 @@ body{
   </div>
 </div>
 
+<!-- 🎵 브라우저 기본 오디오 컨트롤 -->
+<div class="audio-wrap">
+  <audio controls loop>
+    <source src="under-the-same-old-star.mp3" type="audio/mpeg">
+    브라우저가 오디오를 지원하지 않습니다.
+  </audio>
+</div>
+
 <script>
 const stage = document.getElementById("stage");
-const bgm = document.getElementById("bgm");
-const musicBtn = document.getElementById("musicBtn");
-
 stage.addEventListener("click", () => {
   stage.classList.add("open");
 }, { once:true });
-
-musicBtn.addEventListener("click", async () => {
-  try{
-    bgm.muted = true;     // 🔥 핵심 1: 무음으로 시작
-    await bgm.play();    // 🔥 핵심 2: 재생 허용 획득
-    bgm.muted = false;   // 🔥 핵심 3: 소리 켜기
-    bgm.volume = 0.35;
-
-    console.log("🎵 음악 재생 성공 (우회)");
-    musicBtn.remove();
-  }catch(e){
-    console.error(e);
-    alert("그래도 안 되면 새로고침 후 이 버튼만 바로 눌러주세요.");
-  }
-});
 </script>
 </body>
 </html>
