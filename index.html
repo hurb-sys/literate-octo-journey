@@ -351,7 +351,7 @@
     function playSquare(freq, start, dur){
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
-      osc.type = "triangle"; // ✅ 사각파
+      osc.type = "sine"; // ✅ 사각파
       osc.frequency.setValueAtTime(freq, start);
 
       const attack = 0.01, release = 0.06, peak = 0.20;
@@ -410,6 +410,7 @@
   </script>
 </body>
 </html>
+
 
 
 
