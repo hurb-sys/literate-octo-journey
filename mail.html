@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>크리스마스 카드 (한 번 열림 + 산타 + 사각파 캐럴)</title>
+  <style>
+    :root{
+      --bg1:#0b1020;
+      --bg2:#050713;
+      --glass: rgba(255,255,255,.10);
+      --line: rgba(255,255,255,.18);
+      --txt: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.75);
+    }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      background: radial-gradient(circle at top, #1b2a4a 0%, var(--bg1) 55%, var(--bg2) 100%);
+      font-family: system-ui, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      color: var(--txt);
+      overflow:hidden;
+    }
+
+    /* 눈 */
+    .snow{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background-image:
+        radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,.9) 50%, transparent 55%),
+        radial-gradient(1.5px 1.5px at 120px 80px, rgba(255,255,255,.7) 50%, transparent 55%),
+        radial-gradient(2px 2px at 70px 140px, rgba(255,255,255,.6) 50%, transparent 55%),
+        radial-gradient(1px 1px at 200px 60px, rgba(255,255,255,.8) 50%, transparent 55%),
+        radial-gradient(1.5px 1.5px at 260px 160px, rgba(255,255,255,.7) 50%, transparent 55%);
+      background-size: 320px 220px;
+      animation: snowfall 10s linear infinite;
+      opacity:.9;
+    }
+    @keyframes snowfall{
+      from{ transform: translateY(-10%); }
+      to{ transform: translateY(110%); }
+    }
+
+    .hint{
+      position:fixed;
+      top:16px;
+      left:50%;
+      transform:translateX(-50%);
+      padding:10px 14px;
+      border-radius:999px;
+      background: rgba(0,0,0,.25);
+      border:1px solid var(--line);
+      font-size:13px;
+      color: var(--muted);
+      user-select:none;
+    }
+
+    .stage{
+      width:min(820px, 94vw);
+      height:min(480px, 70vh);
+      perspective: 1400px;
+      position:relative;
+    }
+
+    .card{
+      width:100%;
+      height:100%;
+      position:absolute;
+      inset:0;
+      transform-style: preserve-3d;
+      transition: transform 900ms cubic-bezier(.2,.9,.2,1);
+    }
+
+    .front, .inside{
+      position:absolute;
+      inset:0;
+      border-radius:24px;
+      background: linear-gradient(180deg, var(--glass), rgba(255,255,255,.06));
+      border:1px solid var(--line);
+      box-shadow: 0 20px 60px rgba(0,0,0,.45);
+      backdrop-filter: blur(10px);
+      overflow:hidden;
+    }
+
+    .front{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-direction:column;
+      gap:14px;
+      backface-visibility:hidden;
+    }
+
+    .front h1{
+      margin:0;
+      font-size: clamp(26px, 4vw, 44px);
+      letter-spacing:.2px;
+    }
+    .front p{
+      margin:0;
+      color: var(--muted);
+      font-size: clamp(13px, 2.2vw, 18px);
+      text-align:center;
+      padding:0 18px;
+      line-height:1.5;
+    }
+
+    .badge{
+      padding:8px 12px;
+      border-radius:999px;
+      background: rgba(255,255,255,.12);
+      border:1px solid var(--line);
+      font-size:13px;
+      color: var(--muted);
+      user-select:none;
+    }
+
+    .inside{
+      transform: rotateY(180deg);
+      padding:26px;
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:18px;
+      backface-visibility:hidden;
+    }
+
+    .inside .left{
+      background: rgba(0,0,0,.18);
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:18px;
+      padding:18px;
+      overflow:auto;
+    }
+
+    .inside h2{
+      margin:0 0 10px;
+      font-size: clamp(20px, 3vw, 30px);
+    }
+
+    .msg{
+      font-size: clamp(14px, 2.2vw, 18px);
+      line-height:1.75;
+      color: rgba(255,255,255,.92);
+    }
+
+    .sig{
+      margin-top:14px;
+      color: var(--muted);
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      font-size: 14px;
+    }
+    .sig strong{ color: #fff; }
+
+    .right{
+      position:relative;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      overflow:hidden;
+      display:grid;
+      place-items:center;
+    }
+
+    /* 산타 등장 */
+    .santaWrap{
+      width:min(260px, 60%);
+      opacity:0;
+      transform: translateY(40px) scale(.96);
+      transition: opacity 700ms ease, transform 900ms cubic-bezier(.2,.9,.2,1);
+      filter: drop-shadow(0 14px 30px rgba(0,0,0,.35));
+    }
+    .open .santaWrap{
+      opacity:1;
+      transform: translateY(0) scale(1);
+      transition-delay: 250ms;
+    }
+
+    .bubble{
+      position:absolute;
+      top:14px;
+      left:14px;
+      right:14px;
+      padding:12px 14px;
+      border-radius:16px;
+      background: rgba(0,0,0,.22);
+      border:1px solid rgba(255,255,255,.14);
+      color: var(--muted);
+      font-size: 14px;
+      line-height:1.4;
+    }
+
+    /* 하단 버튼 */
+    .controls{
+      position:absolute;
+      bottom:14px;
+      left:14px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    button{
+      border:0;
+      cursor:pointer;
+      padding:10px 12px;
+      border-radius:12px;
+      background: rgba(255,255,255,.14);
+      color:#fff;
+      border:1px solid rgba(255,255,255,.2);
+      font-weight:650;
+      font-size:14px;
+    }
+    button:hover{ background: rgba(255,255,255,.18); }
+
+    /* 열린 상태 */
+    .open .card{ transform: rotateY(180deg); }
+
+    .clickable{
+      position:absolute;
+      inset:0;
+      border-radius:24px;
+      cursor:pointer;
+    }
+    .clickable:active{ transform: scale(.998); }
+
+    @media (prefers-reduced-motion: reduce){
+      .card, .santaWrap, .snow{ animation:none; transition:none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="snow" aria-hidden="true"></div>
+  <div class="hint">카드를 한 번 클릭하면 펼쳐지고, 캐럴이 재생돼요 🎶</div>
+
+  <div class="stage open-once" id="stage" aria-label="크리스마스 카드">
+    <div class="card" id="card">
+      <!-- 겉표지 -->
+      <section class="front">
+        <div class="badge">🎄 Merry Christmas</div>
+        <h1>엄마에게</h1>
+        <p>클릭하면 카드가 펼쳐지고<br/>산타할아버지가 등장 + 사각파 캐럴 🎅🔊</p>
+        <div class="badge">✨ From. 정훈</div>
+      </section>
+
+      <!-- 안쪽 -->
+      <section class="inside">
+        <div class="left">
+          <h2>엄마, 메리 크리스마스! 🎁</h2>
+          <div class="msg" id="msg">
+            엄마!<br/>
+            올해도 저를 챙겨주고 응원해줘서 정말 고마워요.<br/>
+            엄마가 있어서 매일 든든해요.<br/>
+            크리스마스에는 푹 쉬고, 행복한 일만 가득했으면 좋겠어요!<br/><br/>
+            <strong>사랑해요 ❤️</strong>
+          </div>
+
+          <div class="sig">
+            <span id="dateText"></span>
+            <span><strong>- 정훈이 드림</strong></span>
+          </div>
+        </div>
+
+        <div class="right">
+          <div class="bubble" id="bubble">
+            🎅 산타할아버지: “엄마에게 따뜻한 선물이 도착했단다!”
+          </div>
+
+          <!-- 산타 SVG -->
+          <svg class="santaWrap" viewBox="0 0 260 260" role="img" aria-label="산타할아버지">
+            <path d="M70 85 C85 35, 170 30, 190 95 C165 88, 130 90, 70 85 Z" fill="#e53935"/>
+            <circle cx="198" cy="96" r="16" fill="#fff"/>
+            <path d="M60 92 C95 120, 170 120, 205 92 C210 110, 200 125, 185 132 C145 150, 105 150, 75 132 C60 125, 50 110, 60 92 Z" fill="#fff"/>
+
+            <circle cx="130" cy="140" r="54" fill="#ffccbc"/>
+            <path d="M80 150 C85 205, 175 205, 180 150 C170 178, 150 195, 130 195 C110 195, 90 178, 80 150 Z" fill="#fff"/>
+            <circle cx="130" cy="148" r="10" fill="#ffab91"/>
+            <circle cx="110" cy="138" r="6" fill="#222"/>
+            <circle cx="150" cy="138" r="6" fill="#222"/>
+            <path d="M98 126 C110 118, 120 118, 128 126" stroke="#5d4037" stroke-width="6" stroke-linecap="round" fill="none"/>
+            <path d="M162 126 C150 118, 140 118, 132 126" stroke="#5d4037" stroke-width="6" stroke-linecap="round" fill="none"/>
+
+            <path d="M70 210 C85 175, 175 175, 190 210 C175 232, 85 232, 70 210 Z" fill="#e53935"/>
+            <rect x="85" y="198" width="90" height="18" rx="9" fill="#222"/>
+            <rect x="122" y="195" width="22" height="24" rx="4" fill="#fdd835"/>
+
+            <rect x="22" y="198" width="46" height="46" rx="8" fill="#6bc5ff"/>
+            <rect x="41" y="198" width="8" height="46" fill="#fff"/>
+            <rect x="22" y="218" width="46" height="8" fill="#fff"/>
+            <path d="M32 198 C30 186, 44 186, 41 198" fill="#fff"/>
+            <path d="M58 198 C60 186, 46 186, 49 198" fill="#fff"/>
+
+            <circle cx="220" cy="160" r="4" fill="#ffd36e"/>
+            <circle cx="235" cy="140" r="3" fill="#ffd36e"/>
+            <circle cx="215" cy="125" r="3" fill="#ffd36e"/>
+          </svg>
+
+          <div class="controls">
+            <button type="button" id="btnTalk">산타 말 바꾸기</button>
+            <button type="button" id="btnReplay">캐럴 다시 재생</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- 클릭용 투명 레이어 -->
+    <div class="clickable" id="clickArea" title="클릭해서 열기"></div>
+  </div>
+
+  <script>
+    const stage = document.getElementById('stage');
+    const clickArea = document.getElementById('clickArea');
+    const dateText = document.getElementById('dateText');
+    const bubble = document.getElementById('bubble');
+    const btnTalk = document.getElementById('btnTalk');
+    const btnReplay = document.getElementById('btnReplay');
+
+    // 날짜 표시
+    const d = new Date();
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth()+1).padStart(2,'0');
+    const dd = String(d.getDate()).padStart(2,'0');
+    dateText.textContent = `${yyyy}.${mm}.${dd}`;
+
+    // 산타 멘트
+    const lines = [
+      '🎅 산타할아버지: “엄마는 올해도 최고로 멋졌단다!”',
+      '🎅 산타할아버지: “정훈이가 사랑을 한가득 담아 보냈단다!”'
+    ];
+    let idx = 0;
+    btnTalk.addEventListener('click', (e) => {
+      e.stopPropagation();
+      idx = (idx + 1) % lines.length;
+      bubble.textContent = lines[idx];
+    });
+
+    /* =========================
+       사각파(🎛️ square wave) 캐럴
+       - 브라우저 정책상 "사용자 클릭" 후에만 소리 재생 가능
+       - Web Audio API로 간단한 멜로디(징글벨 한 구절 느낌) 연주
+       ========================= */
+
+    let audioCtx = null;
+    let isPlaying = false;
+
+    // 음계 이름 -> 주파수 (A4=440 기준)
+    const NOTE_FREQ = {
+      "C4": 261.63, "D4": 293.66, "E4": 329.63, "F4": 349.23, "G4": 392.00, "A4": 440.00, "B4": 493.88,
+      "C5": 523.25, "D5": 587.33, "E5": 659.25
+    };
+
+    // 아주 간단 캐럴 멜로디(공개/고전 멜로디 느낌으로 짧게)
+    // [note, beats] / note=null이면 쉼표(rest)
+    const MELODY = [
+      ["E4", 1], ["E4", 1], ["E4", 2],
+      ["E4", 1], ["E4", 1], ["E4", 2],
+      ["E4", 1], ["G4", 1], ["C4", 1], ["D4", 1], ["E4", 4],
+      [null, 1],
+      ["F4", 1], ["F4", 1], ["F4", 1], ["F4", 1], ["F4", 1], ["E4", 1], ["E4", 2],
+      ["E4", 1], ["D4", 1], ["D4", 1], ["E4", 1], ["D4", 2], ["G4", 2]
+    ];
+
+    async function ensureAudioContext(){
+      if(!audioCtx){
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if(audioCtx.state === "suspended"){
+        await audioCtx.resume();
+      }
+    }
+
+    function playSquareNote(freq, startTime, durationSec){
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      osc.type = "square";              // ✅ 요청: 사각파
+      osc.frequency.setValueAtTime(freq, startTime);
+
+      // 클릭 소리(팝) 줄이려고 아주 짧은 엔벨로프
+      const attack = 0.01;
+      const release = 0.06;
+      const peak = 0.13;  // 너무 크면 삑삑 폭주하니까 적당히
+      gain.gain.setValueAtTime(0.0001, startTime);
+      gain.gain.exponentialRampToValueAtTime(peak, startTime + attack);
+      gain.gain.exponentialRampToValueAtTime(0.0001, startTime + Math.max(attack, durationSec - release));
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      osc.start(startTime);
+      osc.stop(startTime + durationSec);
+    }
+
+    async function playCarol(){
+      if(isPlaying) return;
+      isPlaying = true;
+
+      try{
+        await ensureAudioContext();
+
+        const bpm = 140;                 // 템포
+        const beatSec = 60 / bpm;
+        let t = audioCtx.currentTime + 0.05;
+
+        for(const [note, beats] of MELODY){
+          const dur = beats * beatSec;
+          if(note && NOTE_FREQ[note]){
+            playSquareNote(NOTE_FREQ[note], t, dur);
+          }
+          t += dur;
+        }
+      } finally{
+        // 대충 끝나는 시간 계산해서 isPlaying 해제
+        const bpm = 140;
+        const beatSec = 60 / bpm;
+        const totalBeats = MELODY.reduce((s, x) => s + x[1], 0);
+        const totalSec = totalBeats * beatSec;
+        setTimeout(() => { isPlaying = false; }, Math.ceil(totalSec * 1000) + 200);
+      }
+    }
+
+    // ✅ 한 번 누르면 안 닫히게 + 그때 캐럴 재생
+    clickArea.addEventListener('click', async () => {
+      stage.classList.add('open');             // 무조건 열기
+      clickArea.style.pointerEvents = 'none';  // 다시 클릭 못 하게(영구 오픈)
+      await playCarol();                       // 열릴 때 사각파 캐럴!
+    });
+
+    // 캐럴 다시 재생 버튼
+    btnReplay.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      await playCarol();
+    });
+
+    // Enter/Space도 열기(한 번만)
+    document.addEventListener('keydown', async (e) => {
+      if(e.key === 'Enter' || e.key === ' '){
+        if(clickArea.style.pointerEvents !== 'none'){
+          stage.classList.add('open');
+          clickArea.style.pointerEvents = 'none';
+          await playCarol();
+        }
+      }
+    });
+  </script>
+</body>
+</html>
+
