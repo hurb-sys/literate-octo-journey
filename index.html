@@ -16,12 +16,8 @@ body{
   color:#fff;
   overflow:hidden;
 }
-
-/* 눈 */
 .snow{
-  position:fixed;
-  inset:0;
-  pointer-events:none;
+  position:fixed; inset:0; pointer-events:none;
   background-image:
     radial-gradient(2px 2px at 20px 30px,#fff 50%,transparent 55%),
     radial-gradient(1.5px 1.5px at 120px 80px,#fff 50%,transparent 55%),
@@ -30,156 +26,59 @@ body{
   animation:snow 10s linear infinite;
   opacity:.8;
 }
-@keyframes snow{
-  from{transform:translateY(-10%)}
-  to{transform:translateY(110%)}
-}
-
-.hint{
-  position:fixed;
-  top:14px;
-  left:50%;
-  transform:translateX(-50%);
-  padding:8px 14px;
-  border-radius:999px;
-  background:rgba(0,0,0,.35);
-  font-size:13px;
-  opacity:.9;
-}
-
-.stage{
-  width:min(820px,94vw);
-  height:min(480px,70vh);
-  perspective:1400px;
-  position:relative;
-}
-
-.card{
-  width:100%;
-  height:100%;
-  transform-style:preserve-3d;
-  transition:transform .9s cubic-bezier(.2,.9,.2,1);
-}
-
-.open .card{
-  transform:rotateY(180deg);
-}
-
+@keyframes snow{from{transform:translateY(-10%)}to{transform:translateY(110%)}}
+.stage{width:min(820px,94vw);height:min(480px,70vh);perspective:1400px;position:relative}
+.card{width:100%;height:100%;transform-style:preserve-3d;transition:.9s}
+.open .card{transform:rotateY(180deg)}
 .front,.inside{
-  position:absolute;
-  inset:0;
-  border-radius:24px;
+  position:absolute; inset:0; border-radius:24px;
   background:rgba(255,255,255,.08);
   border:1px solid rgba(255,255,255,.2);
   backdrop-filter:blur(10px);
-  box-shadow:0 20px 60px rgba(0,0,0,.45);
 }
-
-.front{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:16px;
-  backface-visibility:hidden;
-  text-align:center;
-}
-
-.inside{
-  transform:rotateY(180deg);
-  display:grid;
-  grid-template-columns:1.1fr .9fr;
-  gap:18px;
-  padding:22px;
-  backface-visibility:hidden;
-}
-
-.left{
-  background:rgba(0,0,0,.25);
-  border-radius:18px;
-  padding:18px;
-}
-
-.right{
-  display:grid;
-  place-items:center;
-}
-
-.santa{
-  width:220px;
-  opacity:0;
-  transform:translateY(40px);
-  transition:.8s;
-}
-.open .santa{
-  opacity:1;
-  transform:none;
-}
-
-/* 카드 클릭 레이어 */
-.cardClick{
-  position:absolute;
-  inset:0;
-  cursor:pointer;
-}
-
-/* 음악 버튼 */
+.front{display:grid;place-items:center;backface-visibility:hidden;text-align:center}
+.inside{transform:rotateY(180deg);display:grid;grid-template-columns:1.1fr .9fr;gap:18px;padding:22px}
+.left{background:rgba(0,0,0,.25);border-radius:18px;padding:18px}
+.santa{width:220px;opacity:0;transform:translateY(40px);transition:.8s}
+.open .santa{opacity:1;transform:none}
 #musicBtn{
-  position:fixed;
-  bottom:18px;
-  left:50%;
-  transform:translateX(-50%);
-  padding:12px 20px;
-  border-radius:999px;
-  border:none;
-  background:#ffffffdd;
-  color:#000;
-  font-size:15px;
-  font-weight:600;
-  cursor:pointer;
-  z-index:9999;
+  position:fixed;bottom:18px;left:50%;transform:translateX(-50%);
+  padding:12px 20px;border-radius:999px;border:none;
+  background:#fff;color:#000;font-size:15px;font-weight:600;
+  z-index:9999;cursor:pointer
 }
 </style>
 </head>
 
 <body>
 <div class="snow"></div>
-<div class="hint">카드를 클릭해 열고, 음악 버튼을 눌러주세요 🎵</div>
 
-<!-- 🎵 배경 음악 -->
 <audio id="bgm" preload="auto" loop>
   <source src="under-the-same-old-star.mp3" type="audio/mpeg">
 </audio>
 
-<!-- 🎵 보험용 음악 버튼 -->
 <button id="musicBtn">🔊 음악 켜기</button>
 
 <div class="stage" id="stage">
   <div class="card">
-
-    <!-- 앞면 -->
     <section class="front">
-      <h1>🎄 엄마에게</h1>
-      <p>클릭하면 카드가 열려요</p>
-      <strong>From. 정훈</strong>
+      <div>
+        <h1>🎄 엄마에게</h1>
+        <p>클릭하면 카드가 열려요</p>
+        <strong>From. 정훈</strong>
+      </div>
     </section>
-
-    <!-- 안쪽 -->
     <section class="inside">
       <div class="left">
         <h2>메리 크리스마스 🎁</h2>
-        <p style="line-height:1.7">
+        <p>
           엄마!<br>
-          올해도 항상 고마워요.<br>
-          엄마가 있어서 늘 든든해요.<br>
-          오늘은 꼭 많이 웃는 하루가 되길 바라요.<br><br>
+          항상 고마워요.<br>
+          오늘은 꼭 웃는 하루 되세요.<br><br>
           <strong>사랑해요 ❤️</strong>
         </p>
-        <p style="opacity:.7;font-size:14px">— 정훈이 드림</p>
       </div>
-
-      <div class="right">
-        <!-- 산타 -->
+      <div>
         <svg class="santa" viewBox="0 0 200 220">
           <circle cx="100" cy="90" r="50" fill="#ffccbc"/>
           <path d="M50 95 C60 160,140 160,150 95" fill="#fff"/>
@@ -191,36 +90,31 @@ body{
         </svg>
       </div>
     </section>
-
   </div>
-
-  <div class="cardClick" id="cardClick"></div>
 </div>
 
 <script>
 const stage = document.getElementById("stage");
-const cardClick = document.getElementById("cardClick");
 const bgm = document.getElementById("bgm");
 const musicBtn = document.getElementById("musicBtn");
 
-/* 카드 열기 */
-cardClick.addEventListener("click", () => {
+stage.addEventListener("click", () => {
   stage.classList.add("open");
-  cardClick.style.pointerEvents = "none";
-});
+}, { once:true });
 
-/* 음악 재생 (확정 통과 방식) */
-musicBtn.addEventListener("click", () => {
-  bgm.load();
-  bgm.volume = 0.35;
+musicBtn.addEventListener("click", async () => {
+  try{
+    bgm.muted = true;     // 🔥 핵심 1: 무음으로 시작
+    await bgm.play();    // 🔥 핵심 2: 재생 허용 획득
+    bgm.muted = false;   // 🔥 핵심 3: 소리 켜기
+    bgm.volume = 0.35;
 
-  bgm.play().then(() => {
-    console.log("🎵 음악 재생 성공");
-    musicBtn.remove(); // 성공하면 버튼 제거
-  }).catch(err => {
-    console.error("❌ 음악 재생 실패", err);
-    alert("음악 재생이 차단됐어요. 한 번 더 눌러주세요!");
-  });
+    console.log("🎵 음악 재생 성공 (우회)");
+    musicBtn.remove();
+  }catch(e){
+    console.error(e);
+    alert("그래도 안 되면 새로고침 후 이 버튼만 바로 눌러주세요.");
+  }
 });
 </script>
 </body>
